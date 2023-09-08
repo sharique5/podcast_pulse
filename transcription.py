@@ -3,12 +3,12 @@ import config
 
 # Creates an instance of a speech config with specified subscription key and service region.
 # Replace with your own subscription key and region.
-speech_key, service_region = Key1, Region
+speech_key, service_region = config.Key1, config.Region
 speech_config=speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
 
 # Creates an audio configuration that points to an audio file.
 # Replace with your own audio filename.
-audio_filename = "sample-audio.wav"
+audio_filename = "(Life) Advice From The Creator of C++.wav"
 audio_input = speechsdk.audio.AudioConfig(filename=audio_filename)
 
 # Creates a recognizer with the given settings
