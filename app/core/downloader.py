@@ -21,11 +21,7 @@ async def download_youtube_podcast(yt_url):
     curr_dir = os.path.dirname(os.path.abspath(__file__)) 
     file_path = os.path.normpath(os.path.join(curr_dir, "../", "../", "audio"))
     file_name = shortuuid.uuid()
-    downloaded_file = audio.download(output_path=file_path, filename=file_name)
-    
-    # base, ext = os.path.splitext(downloaded_file)
-    # mp3_audio_file = base + '.mp3' 
-    # os.rename(downloaded_file, mp3_audio_file)
+    downloaded_file = audio.download(output_path=file_path, filename=file_name)    
     wav_file = convert.convert_mp4_to_wav_pydub(downloaded_file)
     os.remove(downloaded_file)
     return wav_file
