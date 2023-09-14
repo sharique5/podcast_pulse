@@ -25,7 +25,8 @@ async def transcribeAudio(request: Request):
             return {"message": "Failed while fetching audio from the URL"}
         
         print("Downloaded path is {}".format(downloaded_file_path))
-        await transcribe.speech_recognize_once_from_file(downloaded_file_path)
+        complete_transcript = transcribe.speech_continuous_recognition(downloaded_file_path)
+        print("Length of transcript is {}".format(len(complete_transcript)))
         # perform transcription now
         return {"message": downloaded_file_path, "success": True}
     except Exception:
