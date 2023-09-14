@@ -41,9 +41,11 @@ async def transcribeAudio(request: Request):
 def show_transcript(transcript_id):
     curr_dir = os.path.dirname(os.path.abspath(__file__)) 
     transcript_file_path = os.path.normpath(os.path.join(curr_dir, "../", "transcripts", transcript_id + ".txt"))
-    with open(transcript_file_path, "r") as file:
-        content = file.read()
-        
-    # Print the content
-    print(content)
-    return {"transcript": content, "success": True}
+    if os.path.isfile(transcript_file_path):
+        with open(transcript_file_path, "r") as file:
+            content = file.read()
+        # Print the content
+        print(content)
+        return {"transcript": content, "success": True}
+    else:
+        return {"transcript": "Not Found!", "success": False}
