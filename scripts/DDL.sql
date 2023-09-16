@@ -12,8 +12,8 @@ CREATE TABLE podcast_details (
     summary text,
     is_email_sent boolean NOT NULL DEFAULT false,
     state character varying DEFAULT 'IDLE'::character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone
+    created_at timestamp without time zone NOT NULL DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now()
 );
 COMMENT ON TABLE podcast_details IS 'This table stores all the details of podcast';
 
