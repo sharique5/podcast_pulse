@@ -10,6 +10,7 @@ async def speech_continuous_recognition(audio_file_path, transcript_file_path):
     def stop_cb(evt):
         print('CLOSING on {}'.format(evt))
         speech_recognizer.stop_continuous_recognition()
+        # + END_OF_TRANSCRIPT
 
     def write_transcript(evt):
         with open(transcript_file_path, "a") as tfile:
