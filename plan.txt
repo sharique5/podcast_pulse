@@ -1,0 +1,59 @@
+plans
+
+queue method
+UI
+download
+transcript
+summarization
+email
+
+DB 
+1. podcast_details:
+- id
+- url
+- email
+- transcript 
+- summary
+- email_sent
+- state => {"downloading", "transcription", "summary", "email", "error", "complete", "failed"}
+
+
+UI -> {EMAIL, YT_URL} -> API (uuid)  -> DB_DUMP -> download_queue -> read from the channel -> download_start 
+-> success(write) -> transcript_queue -> transcribe -> summary_queue -> email -> email_queue -> email
+
+Which Queue?
+1. redis
+
+
+
+1. active_jobs
+- id
+- url
+- download_state: {"IDLE", INPROGRESS, SUCCESS, FAILED}
+- transcript_state: {IDLE, INPROGRESS, SUCCESS, FAILED}
+- summary_state: {IDLE, INPROGRESS, SUCCESS, FAILED}
+- email_state: {IDLE, INPROGRESS, SUCCESS, FAILED}
+
+
+2. podcast_details:
+- id
+- url
+- download_filename: string
+- email
+- transcript: text
+- summary
+- email_sent
+ 
+
+ UI -> API -> record active_jobs
+
+download_poll -> get all the rows where download_state == IDLE -> id, url -> download start -> if success store podcast_details 
+transcript_poll -> get all the rows where download_state == COMPLETE && transcript_state == IDLE -> id, url -> transcript start -> if success store podcast_details 
+summarize_poll -> get all the rows where download_state == COMPLETE && download_state == COMPLETE && download_state == IDLE -> id, url -> download start -> if success store podcast_details 
+email_poll -> get all the rows where download_state == IDLE -> id, url -> download start -> if success store podcast_details 
+
+Cons:
+Unnecessary DB read
+Constant Polling
+Failure retry (manually)
+
