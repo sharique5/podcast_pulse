@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from fastapi import Request, FastAPI
-from app.core import downloader, transcribe
+from core import MailService, downloader, transcribe
 import traceback
 import os
 
@@ -47,3 +47,14 @@ def show_transcript(transcript_id):
     # Print the content
     print(content)
     return {"transcript": content, "success": True}
+
+
+@app.post("/mail/transcript/{transcript_id}")
+async def show_transcript(transcript_id, request : Request):
+    body = await request.json()
+    recipient_email = body["email"]
+    curr_dir = os.path.dirname(os.path.abspath(__file__)) 
+    transcript_file_path = os.path.normpath(os.path.join(curr_dir, "../", "transcripts", transcript_id + ".txt"))
+    # send email
+    MailService.sendEmail(recipient_email, transcript_file_path)
+    return {"success": True}
