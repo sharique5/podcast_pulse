@@ -2,7 +2,7 @@ import os
 import time
 import asyncio
 import azure.cognitiveservices.speech as speechsdk
-from constants import worker_status
+from app.core.constants import worker_status
 
 async def speech_continuous_recognition_old(file_id):
     curr_dir = os.path.dirname(os.path.abspath(__file__)) 

@@ -1,4 +1,4 @@
 worker_status = {
-    transcribe: False,
-    summarize: False
+    "transcribe": False,
+    "summarize": False
 }

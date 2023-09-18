@@ -2,7 +2,7 @@ from langchain.llms import OpenAI
 from langchain.chains.summarize import load_summarize_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import YoutubeLoader
-from constants import worker_status
+from app.core.constants import worker_status
 
 async def summarize_text(file_id):
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
