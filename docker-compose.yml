@@ -7,6 +7,8 @@ services:
     volumes:
       - ./audio/:/code/audio/
       - ./transcripts/:/code/transcripts/
+      - ./summary/:/code/summary/
+      - ./templates/:/code/templates/
     ports:
       - 8000:8000
     depends_on:
@@ -44,6 +46,7 @@ services:
       - ./audio/:/code/audio/
       - ./transcripts/:/code/transcripts/
       - ./summary/:/code/summary/
+      - ./templates/:/code/templates/
       # - ./app/:/code/app/
     deploy:
       replicas: 1
