@@ -25,7 +25,9 @@ def sendEmail(recipient_email, file_path):
     message.attach(attachment)
 
     email_template = ""
-    with open("./templates/email.html", "rb") as file:
+    curr_dir = os.path.dirname(os.path.abspath(__file__)) 
+    template_file = os.path.normpath(os.path.join(curr_dir, "../", "../", "templates/email.html"))
+    with open(template_file, "rb") as file:
         email_template = file.read().decode()
     email_template = email_template.replace("{{SUMMARY}}", summary_text.decode())
     html_email = MIMEText(email_template, 'html')

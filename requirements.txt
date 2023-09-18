@@ -18,7 +18,6 @@ marshmallow==3.20.1
 multidict==6.0.4
 mypy-extensions==1.0.0
 numexpr==2.8.6
-numpy==1.26.0
 openai==0.28.0
 packaging==23.1
 psycopg2-binary==2.9.7

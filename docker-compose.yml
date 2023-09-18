@@ -1,0 +1,62 @@
+version: '3.7'
+
+services:
+  fastapi:
+    build: .
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./audio/:/code/audio/
+      - ./transcripts/:/code/transcripts/
+      - ./summary/:/code/summary/
+      - ./templates/:/code/templates/
+    ports:
+      - 8000:8000
+    depends_on:
+      - redis
+    restart: unless-stopped
+    # environment:
+    #   - SPEECH_KEY=
+    #   - SPEECH_REGION=
+    # depends_on:
+    #   - nothing
+
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx_config.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - fastapi
+  redis:
+    restart: unless-stopped
+    image: redis:alpine
+    ports:
+      - 6379:6379
+  rq-worker:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: rq.Dockerfile
+    container_name: rq-worker
+    command: rq worker -u redis://redis:6379 download transcript summarize mailer
+    volumes:
+      - ./audio/:/code/audio/
+      - ./transcripts/:/code/transcripts/
+      - ./summary/:/code/summary/
+      - ./templates/:/code/templates/
+      # - ./app/:/code/app/
+    deploy:
+      replicas: 1
+    depends_on:
+      - redis
+  rq-dashboard:
+    image: jaredv/rq-docker:0.0.2 
+    command: rq-dashboard -H redis
+    ports:
+      - 9181:9181
+
+
+# volumes:
