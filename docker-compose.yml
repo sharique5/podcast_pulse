@@ -9,6 +9,8 @@ services:
       - ./transcripts/:/code/transcripts/
     ports:
       - 8000:8000
+    depends_on:
+      - redis-server
     # environment:
     #   - SPEECH_KEY=
     #   - SPEECH_REGION=
@@ -24,7 +26,23 @@ services:
       - ./nginx_config.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - fastapi
+  redis-server:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+  rq-worker:
+    image: jaredv/rq-docker:0.0.2
+    container_name: rq-worker
+    command: rq worker -u redis://redis-server:6379 download transcript summarize mailer
+    deploy:
+      replicas: 1
+    depends_on:
+      - redis-server
+  rq-dashboard:
+    image: jaredv/rq-docker:0.0.2 
+    command: rq-dashboard -H redis-server
+    ports:
+      - 9181:9181
 
-volumes:
-  postgres_data_movie:
-  postgres_data_cast:
+
+# volumes:
