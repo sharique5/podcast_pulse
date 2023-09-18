@@ -26,9 +26,13 @@ async def summarize_text(file_id):
     chain = load_summarize_chain(llm, chain_type="map_reduce", verbose=False)
     print(chain.run(docs))
 
-    with open(summary_file, "a") as tfile:
-        tfile.write(chain.run(docs) + "\n")
-        set_summary_status("False")
+    try:
+        with open(summary_file, "a") as tfile:
+            tfile.write(chain.run(docs) + "\n")
+            set_summary_status("False")
+        while is_summarization_running():
+            time.sleep(.5)
+    except:
+        pass
     
-    while is_summarization_running():
-        time.sleep(.5)
+    
