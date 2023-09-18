@@ -2,6 +2,7 @@ import os
 import time
 import asyncio
 import azure.cognitiveservices.speech as speechsdk
+from app.utils.redis_consts import set_transcription_status, is_transcription_running
 
 async def speech_continuous_recognition_old(file_id):
     curr_dir = os.path.dirname(os.path.abspath(__file__)) 
@@ -13,13 +14,15 @@ async def speech_continuous_recognition_old(file_id):
     speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config,
                                                audio_config=audio_config)
     
-    done = False
+    set_transcription_status("True")
     def stop_cb(evt):
-        global done
         print('CLOSING on {}'.format(evt))
-        done = True
+        set_transcription_status("False")
         speech_recognizer.stop_continuous_recognition()
         return
+
+    def start_cb(evt):
+        print('status on {}'.format(evt))
 
     def write_transcript(evt):
         print("Chunk came here....")
@@ -29,11 +32,12 @@ async def speech_continuous_recognition_old(file_id):
     # For long-running multi-utterance recognition, use start_continuous_recognition() instead.
     speech_recognizer.recognized.connect(write_transcript)
     speech_recognizer.session_stopped.connect(stop_cb)
+    speech_recognizer.session_started.connect(start_cb)
     speech_recognizer.canceled.connect(stop_cb)
 
 
     speech_recognizer.start_continuous_recognition()
-    while not done:
+    while is_transcription_running():
         time.sleep(.5) 
 
 

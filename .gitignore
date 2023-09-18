@@ -323,3 +323,4 @@ cython_debug/
 
 audio/
 transcripts/
+dump.rdb

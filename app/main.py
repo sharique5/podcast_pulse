@@ -9,7 +9,11 @@ from app.queue import download_queue
 from app.core import MailService, downloader, transcribe
 from app.workers.download import start_download_work
 from app.db import db_client
+from pydantic import BaseModel
 
+class SummaryRequest(BaseModel):
+    url: str
+    email: str
 
 # dont move this down
 load_dotenv()
@@ -28,17 +32,9 @@ def root():
 #     return {"testing": message}
 
 @app.post("/summary")
-async def summarizeAndSendMail(request: Request):
-    body = None
-    try:
-        body = await request.json();
-    except Exception:
-        body = {}
-        print("Exception happened while parsing request body")
-
-
-    podcast_url = body.get("url", None);
-    email = body.get("email", None)
+async def summarizeAndSendMail(request: SummaryRequest):
+    podcast_url = request.url
+    email = request.email
 
     if podcast_url is None or email is None:
         response = {
