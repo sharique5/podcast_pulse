@@ -1,6 +1,9 @@
 # Podcast Pulse
 
+<img src="https://techcrunch.com/wp-content/uploads/2019/02/podcast-mic-blue.png"/>
+
 ## How to run docker
+
 - Make sure you have installed `docker` and `docker-compose`
 - Run `docker-compose up -d`
 - Go to localhost/
