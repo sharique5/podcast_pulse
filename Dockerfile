@@ -1,7 +1,9 @@
-FROM python:3.9
+FROM ubuntu:20.04
 
 # ffmpeg needed for services
 RUN apt-get update && apt-get install -y software-properties-common
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt install -y python3.9 pip
 RUN apt-get install -y ffmpeg
 
 WORKDIR /code
