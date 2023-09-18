@@ -1,7 +1,6 @@
 from langchain.llms import OpenAI
 from langchain.chains.summarize import load_summarize_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.document_loaders import YoutubeLoader
 
 
 OPENAI_API_KEY = ''
