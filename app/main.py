@@ -10,6 +10,7 @@ from app.core import downloader, transcribe
 from app.workers.download import start_download_work
 from app.db import db_client
 from pydantic import BaseModel
+from app.utils import global_variable
 
 class SummaryRequest(BaseModel):
     url: str
@@ -19,6 +20,7 @@ class SummaryRequest(BaseModel):
 load_dotenv()
 
 app = FastAPI()
+global_variable.load_redis_config()
 
 @app.get("/")
 def root():

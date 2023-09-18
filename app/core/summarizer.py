@@ -2,7 +2,7 @@ from langchain.llms import OpenAI
 from langchain.chains.summarize import load_summarize_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import YoutubeLoader
-from app.core.constants import worker_status
+from app.utils.redis_consts import set_summary_status, is_summarization_running
 
 async def summarize_text(file_id):
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -14,7 +14,7 @@ async def summarize_text(file_id):
     transcript_file = os.path.normpath(os.path.join(curr_dir, "../", "../", "transcripts", f"{file_id}.txt"))
     summary_file = os.path.normpath(os.path.join(curr_dir, "../", "../", "summary", f"{file_id}.txt"))
 
-    worker_status.summarize = False
+    set_summary_status(False)
     with open(transcript_file, 'r',encoding="utf8") as f:
         result = f.read()
     text_splitter = RecursiveCharacterTextSplitter(separators=["\n\n", "\n", " "],chunk_size=200, chunk_overlap=50)
@@ -27,7 +27,7 @@ async def summarize_text(file_id):
 
     with open(summary_file, "a") as tfile:
         tfile.write(chain.run(docs) + "\n")
-        worker_status.summarize = True
+        set_summary_status(True)
     
-    while not worker_status.summarize:
+    while is_summarization_running():
         time.sleep(.5)
