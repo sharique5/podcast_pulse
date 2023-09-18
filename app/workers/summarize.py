@@ -9,6 +9,6 @@ async def start_summary_work(uid, transcript_file_name):
     if is_update_success:
         await summarizer.summarize_text(transcript_file_name)
         update_status.update_workflow_status(uid, "SUMMARY_COMPLETE")
-        mailer_queue.enqueue(mail.send_worker_email, uid, transcript_file_name, job_timeout=2000)
+        mailer_queue.enqueue(mail.start_email_work, uid, transcript_file_name, job_timeout=2000)
     else:
         update_status.update_workflow_status(uid, "SUMMARY_FAILED")

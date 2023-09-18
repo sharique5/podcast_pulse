@@ -49,8 +49,8 @@ def send_worker_email(uuid, file_path):
     message["To"] = recipient_email
     message["Subject"] = subject
 
-    file_path = os.path.normpath(os.path.join('./summary', file_path, '.txt'))
-    # print(file_path)
+    file_path = os.path.normpath(os.path.join('./summary', file_path))
+    file_path += ".txt"
     summary_text = ""
     with open(file_path, "rb") as file:
         summary_text = file.read()
