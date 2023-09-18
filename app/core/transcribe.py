@@ -2,6 +2,7 @@ import os
 import time
 import asyncio
 import azure.cognitiveservices.speech as speechsdk
+from constants import worker_status
 
 async def speech_continuous_recognition_old(file_id):
     curr_dir = os.path.dirname(os.path.abspath(__file__)) 
@@ -13,11 +14,11 @@ async def speech_continuous_recognition_old(file_id):
     speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config,
                                                audio_config=audio_config)
     
-    done = False
+    worker_status.transcribe = False
     def stop_cb(evt):
-        global done
+        # global done
         print('CLOSING on {}'.format(evt))
-        done = True
+        worker_status.transcribe = True
         speech_recognizer.stop_continuous_recognition()
         return
 
@@ -33,7 +34,7 @@ async def speech_continuous_recognition_old(file_id):
 
 
     speech_recognizer.start_continuous_recognition()
-    while not done:
+    while not worker_status.transcribe:
         time.sleep(.5) 
 
 
