@@ -1,8 +1,10 @@
 import rq
 import os
+from dotenv import load_dotenv
 from redis import Redis
 
-redis_url = os.getenv("REDIS_URL")
+load_dotenv()
+redis_url: str = os.getenv("REDIS_URL")
 
 download_queue: rq.Queue = rq.Queue("download", connection=Redis(redis_url))
 transcript_queue: rq.Queue = rq.Queue("transcript", connection=Redis(redis_url))
