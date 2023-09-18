@@ -324,3 +324,5 @@ cython_debug/
 audio/
 transcripts/
 dump.rdb
+summary/
+**/.DS_Store
