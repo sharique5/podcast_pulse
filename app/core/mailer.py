@@ -1,9 +1,8 @@
 import smtplib, os
 from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
-def sendEmail(recipient_email : str, file_path : str):
+def sendEmail(recipient_email, file_path):
     sender_email = "podcastpulse9@gmail.com"
     sender_password = "mqdzplzhayjedpug"
     subject = "Your podcast summary 🚀"
