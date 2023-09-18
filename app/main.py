@@ -1,17 +1,94 @@
+import os
+import traceback
+import shortuuid
+import psycopg2
 from dotenv import load_dotenv
 from fastapi import Request, FastAPI
-from core import MailService, downloader, transcribe
-import traceback
-import os
+from rq import Retry
+from app.queue import download_queue
+from app.core import MailService, downloader, transcribe
+from app.workers.download import start_download_work
+from app.db import db_client
 
+
+# dont move this down
 load_dotenv()
-app = FastAPI()
 
+app = FastAPI()
 
 @app.get("/")
 def root():
     return {"message": "🚀"}
 
+
+# @app.get("/test/{message}")
+# def test(message: str):
+#     print(download_queue.count)
+#     download_queue.enqueue(download.start_download_work, message, retry=Retry(max=3))
+#     return {"testing": message}
+
+@app.post("/summary")
+async def summarizeAndSendMail(request: Request):
+    body = None
+    try:
+        body = await request.json();
+    except Exception:
+        body = {}
+        print("Exception happened while parsing request body")
+
+
+    podcast_url = body.get("url", None);
+    email = body.get("email", None)
+
+    if podcast_url is None or email is None:
+        response = {
+            "success": False,
+            "message": "Invalid request body provided",
+            "data": {}
+        }
+
+        return response
+    
+    # prepare request body to send on download queue
+    file_id = shortuuid.uuid()
+    is_insertion_failed = False
+    try:
+        podcast_details_insert_query = """INSERT INTO podcast_details (podcast_url, email, file_id) VALUES (%s,%s,%s) RETURNING id;"""
+        podcast_details_to_insert = (podcast_url, email, file_id)
+        cursor = db_client.cursor()
+        cursor.execute(podcast_details_insert_query, podcast_details_to_insert)
+        uid = cursor.fetchone()[0]
+
+        # commit changes and then close the cursor
+        db_client.commit()
+        print("PostgreSQL successfully inserted")
+    except (Exception, psycopg2.Error) as error:
+        print(traceback.format_exc())
+        print("Failed to insert record into podcast_details table", error)
+        is_insertion_failed = True
+    finally:
+        # closing database connection.
+        if db_client:
+            cursor.close()
+            if is_insertion_failed:
+                response = {
+                    "success": False,
+                    "message": "Failed to process the request, check DB",
+                    "data": {}
+                }
+                return response
+    
+    # i am passing this data packet to download queue
+    download_task_dict = {
+        "uid": uid,
+        "url": podcast_url,
+        "file_id": file_id
+    }
+        
+    print("Sending to queue =  {}".format(download_task_dict))
+    # send data to download queue
+    download_queue.enqueue(start_download_work, download_task_dict)
+    return download_task_dict
 
 @app.post("/transcribe")
 async def transcribeAudio(request: Request):
