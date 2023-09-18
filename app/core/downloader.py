@@ -1,10 +1,9 @@
 import os
 import traceback
-import shortuuid
 from pytube import YouTube
 from app.utils import convert
 
-async def download_youtube_podcast(yt_url):
+async def download_youtube_podcast(yt_url, file_id):
   try:
     yt = YouTube(yt_url)
     audio_list = list(filter(lambda x: x['mimeType'].startswith('audio') == True, yt.streaming_data['adaptiveFormats']))
@@ -20,8 +19,7 @@ async def download_youtube_podcast(yt_url):
     audio = yt.streams.filter()[english_audio_position]
     curr_dir = os.path.dirname(os.path.abspath(__file__)) 
     file_path = os.path.normpath(os.path.join(curr_dir, "../", "../", "audio"))
-    file_name = shortuuid.uuid()
-    downloaded_file = audio.download(output_path=file_path, filename=file_name)    
+    downloaded_file = audio.download(output_path=file_path, filename=file_id)
     wav_file = convert.convert_mp4_to_wav_pydub(downloaded_file)
     os.remove(downloaded_file)
     return wav_file
