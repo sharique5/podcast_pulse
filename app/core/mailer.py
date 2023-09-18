@@ -1,10 +1,12 @@
 import smtplib, os
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
+from email.mime.text import MIMEText
+
+sender_email = os.getenv("SENDER_EMAIL")
+sender_password = os.getenv("SENDER_PASSWORD")
 
 def sendEmail(recipient_email, file_path):
-    sender_email = "podcastpulse9@gmail.com"
-    sender_password = "mqdzplzhayjedpug"
     subject = "Your podcast summary 🚀"
     smtp_server = "smtp.gmail.com"
     smtp_port = 587  # Use 465 for SSL or 587 for TLS
@@ -15,10 +17,19 @@ def sendEmail(recipient_email, file_path):
 
     file_path = os.path.normpath(file_path)
     # print(file_path)
+    summary_text = ""
     with open(file_path, "rb") as file:
-        attachment = MIMEApplication(file.read(), _subtype="txt")
+        summary_text = file.read()
+        attachment = MIMEApplication(summary_text, _subtype="txt")
     attachment.add_header("Content-Disposition", f"attachment; filename=summary.txt")
     message.attach(attachment)
+
+    email_template = ""
+    with open("./templates/email.html", "rb") as file:
+        email_template = file.read().decode()
+    email_template = email_template.replace("{{SUMMARY}}", summary_text.decode())
+    html_email = MIMEText(email_template, 'html')
+    message.attach(html_email)
 
     message_text = message.as_string()
 
