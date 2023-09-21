@@ -4,6 +4,7 @@ import shortuuid
 import psycopg2
 from dotenv import load_dotenv
 from fastapi import Request, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from rq import Retry
 from app.queue import download_queue
 from app.core import downloader, mailer, transcribe
@@ -19,6 +20,14 @@ class SummaryRequest(BaseModel):
 load_dotenv()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @app.get("/")
 def root():
