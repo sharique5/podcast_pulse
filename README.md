@@ -12,6 +12,7 @@
 ## Setup
 
 - Install FFMPEG on your system
+- Install Redis on your system
 - Make sure you are using Python3
 - Git clone the repo
 - Run `pip install -r requirements.txt` inside the root dir
