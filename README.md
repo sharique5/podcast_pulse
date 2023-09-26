@@ -2,6 +2,10 @@
 
 <img src="https://techcrunch.com/wp-content/uploads/2019/02/podcast-mic-blue.png"/>
 
+## Architecure
+
+<img src="https://github.com/sharique5/podcast_pulse/assets/26196076/43002852-69f8-490d-93d3-44fe8386b7c5"/>
+
 ## How to run docker
 
 - Make sure you have installed `docker` and `docker-compose`
